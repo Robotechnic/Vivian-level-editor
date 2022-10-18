@@ -1,41 +1,65 @@
 <script lang="ts">
-	import InputGroup from "./inputGroup.svelte";
+	import InputGroup from "./components/inputGroup.svelte"
+	import TitleNav from "./components/titleNav.svelte"
+	import { levelWidth, levelHeight, levelStore } from "./stores/levelStore"
 
-	let tiles : Array<Number> = [
-		1, 2, 3, 4, 5, 6, 7
-	]
-	let value : Number = 0
+	let tiles: Array<Number> = [1, 2, 3, 4, 5, 6, 7]
+	let value: Number = 0
 
-	const addTile = () => {
+	const addTile = (event) => {
 		tiles = [...tiles, tiles.length + 1]
+	}
+
+	
+	const resizeLevel = (event) => {
+		levelStore.resize(
+			$levelWidth,
+			$levelHeight
+		)
 	}
 </script>
 
-<nav>
-	<h2>Configuration</h2>
-	<hr/>
+<TitleNav title="Configuration" shadow="right">
 	<form>
 		<div class="fileManager">
-			<label>
-				Project Manager
-			</label>
-			<button>
-				Import level set
-			</button>
-			<button>
-				Export level set
+			<h3>Project Manager</h3>
+			<button> Import level set </button>
+			<button> Export level set </button>
+		</div>
+		
+		<div class="gridSize">
+			<h3>Grid Size</h3>
+			<InputGroup
+				label="Width:"
+				name="width"
+				type="number"
+				inputParams={{ min: 0, max: 100, step: 1}}
+				bind:value={$levelWidth}
+			/>
+			<InputGroup
+				label="Height:"
+				name="height"
+				type="number"
+				inputParams={{ min: 0, max: 100, step: 1}}
+				bind:value={$levelHeight}
+			/>
+			<button on:click|preventDefault={resizeLevel}>
+				Resize
 			</button>
 		</div>
 
-		<InputGroup label="Grid width:" name="width" type="number" inputParams={{min:0, max:100, step:1, value:10}}/>
-		<InputGroup label="Grid height:" name="height" type="number" inputParams={{min:0, max:100, step:1, value:10}}/>
-		
 		<div class="tileSelector">
-			<label>Tile selector :</label>
+			<h3>Tile selector :</h3>
 			<ul class="tileSelector__itemList">
 				{#each tiles as tile, id}
 					<li class="tileSelector__itemList__tile">
-						<input type="radio" name={"tile" + id} id={"tile" + id} value={tile} bind:group={value}>
+						<input
+							type="radio"
+							name={"tile" + id}
+							id={"tile" + id}
+							value={tile}
+							bind:group={value}
+						/>
 						<label for={"tile" + id}>{tile}</label>
 					</li>
 				{/each}
@@ -46,80 +70,66 @@
 			</ul>
 		</div>
 	</form>
-</nav>
-
+</TitleNav>
 
 <style lang="scss">
-	nav {
+	form {
+		padding: 1em 1rem;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		width: min-content;
-		max-height: var(--app-height);
+		gap: 1rem;
+		overflow-y: scroll;
 
-		// left box shadow to differenciante from the grid
-		box-shadow: 10px 0px 10px -10px rgba(0,0,0,0.75);
-		z-index: 1;
-		
-		h2 {
-			margin: 0;
-			padding: 0 1rem;
-			text-align: center;
-		}
-
-		hr {
-			width: 100%;
-			margin:0;
-		}
-
-		form {
-			padding: 1em 1rem;
+		.fileManager {
 			display: flex;
 			flex-direction: column;
-			gap: 1rem;
-
-			.fileManager {
-				display: flex;
-				flex-direction: column;
-				button:nth-child(2) {
-					margin-bottom: 1rem;
-				}
+			button:nth-child(2) {
+				margin-bottom: 1rem;
 			}
+		}
 
-			.tileSelector {
-				&__itemList {
-					display: grid;
-					grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-					gap: .5em;
-					padding:0;
-					margin:0;
+		.gridSize {
+			display: flex;
+			flex-direction: column;
+			button {
+				margin-top: 1rem;
+			}
+		}
 
-					&__tile {
-						list-style: none;
-						margin:0;
-						padding:0;
+		.tileSelector {
+			&__itemList {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
+				gap: 0.5em;
+				padding: 0;
+				margin: 0;
 
-						input, button {
-							display: none;
-						}
+				&__tile {
+					list-style: none;
+					margin: 0;
+					padding: 0;
 
-						label {
-							min-width: 2em;
-							min-height: 2em;
-							border: solid var(--text-color) 1px;
-							display: flex;
-							align-items: center;
-							justify-content: center;
-							aspect-ratio: 1/1;
-							width: 20%;
-							cursor: pointer;
-						}
+					input,
+					button {
+						display: none;
 					}
 
-					&::after {
-						content: " ";
-						width: auto;
+					label {
+						min-width: 2em;
+						min-height: 2em;
+						border: solid var(--text-color) 1px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						aspect-ratio: 1/1;
+						width: 100%;
+						cursor: pointer;
 					}
+				}
+
+				&::after {
+					content: " ";
+					width: auto;
 				}
 			}
 		}

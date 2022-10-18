@@ -11,9 +11,10 @@
 </main>
 
 <style lang="scss">
-main {
-	display: flex;
-	flex-direction: row;
-	width: 100vw;
-}
+	main {
+		display: flex;
+		flex-direction: row;
+		width: 100vw;
+		height: 100%;
+	}
 </style>

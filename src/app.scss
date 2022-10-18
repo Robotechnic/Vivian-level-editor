@@ -40,6 +40,7 @@ header {
 }
 
 #app {
+	height: var(--app-height);
 	max-height: var(--app-height);
 }
 

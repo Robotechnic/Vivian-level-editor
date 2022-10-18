@@ -1,5 +1,7 @@
 <script lang="ts">
-	import {levelStore, level } from "./stores/levelStore"
+	import Grid from "./components/grid.svelte";
+import {levelStore, level } from "./stores/levelStore"
+    import { tiles } from "./stores/tileStore"
 
 	const addNewLevel = () => {
 		levelStore.addLevel();
@@ -7,18 +9,10 @@
 	}
 </script>
 
-<section id="editor">
+<section class="editor">
 	{#if $level != -1 && $levelStore.length > 0}
-		<div class="grid">
-			{#each $levelStore[$level] as row, rowId}
-				<div class="row">
-					{#each row as tile, tileId}
-						<div class="tile" style="background-color: hsl({(rowId + tileId) * 15}, 100%, 50%)">
-							{tile}
-						</div>
-					{/each}
-				</div>
-			{/each}
+		<div class="editor__gridContener">
+			<Grid gridId={$level} />
 		</div>
 	{:else if $levelStore.length == 0}
 		<div class="center">
@@ -33,40 +27,21 @@
 </section>
 
 <style lang="scss">
-	#editor {
-		display: block;
-		width: 100%;
-		overflow: scroll;
+	.editor {
 		max-height: var(--app-height);
+		overflow: scroll;
+		flex:1;
 
-		.center {
+		&__gridContener, .center {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			height: 100%;
-		}
-	}
-
-	.grid {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-		width: 100%;
-		.row {
-			display: flex;
-			flex-direction: row;
-		}
-
-		.tile {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			height: 50px;
-			width: 50px;
-			border: 1px solid black;
+			width: 100%;
+			font-size: 3em;
+			margin:0;
+			padding:0;
 		}
 	}
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { levelStore } from "./stores/levelStore"
+	import { levelStore, level } from "./stores/levelStore"
     import TitleNav from "./components/titleNav.svelte"
+    import Grid from "./components/grid.svelte"
 	
 	const addLevel = (event) => {
 		levelStore.addLevel();
@@ -8,21 +9,18 @@
 </script>
 
 <TitleNav title="Level Selector" shadow="left">
+	<button on:click={addLevel}>
+		Add a new level
+	</button>
 	<div class="levelList">
-		<button on:click={addLevel}>
-			Add a new level
-		</button>
 		{#if $levelStore.length != 0}
 			<ul class="levelList__list">
-				{#each $levelStore as level, i}
+				{#each $levelStore as levelGrid, i}
 					<li>
-						<div class="levelList__list__grid">
-							{#each level as row, j}
-								{#each row as cell, k}
-									<div class="cell" style="background-color: hsl({(j+k) * 10} 100% 50%);">&nbsp;</div>
-								{/each}
-							{/each}
-						</div>
+						<input type="radio" name="level" id="level-{i}" value={i} bind:group={$level}/>
+						<label class="levelList__list__grid" for="level-{i}">
+							<Grid gridId={i} />
+						</label>
 					</li>
 				{/each}
 			</ul>
@@ -33,17 +31,18 @@
 </TitleNav>
 
 <style lang="scss">
+	button {
+		justify-self: center;
+		margin: 1rem 1rem;
+		width: calc(100% - 2rem);
+		box-sizing: border-box;
+	}
+
 	.levelList {
 		padding: 0 1rem;
 		overflow-y: scroll;
-		flex:1;
-		min-width: max-content;
-
-		button {
-			justify-self: center;
-			margin: 1rem 0;
-			width: 100%;
-		}
+		max-width: 100%;
+		box-sizing: border-box;
 
 		&__list {
 			margin:0;
@@ -58,18 +57,22 @@
 				margin: 0;
 				padding:0;
 				cursor: pointer;
-			}
+				overflow: hidden;
 
-			&__grid {
-				display: grid;
-				grid-template-columns: repeat(10, 1fr);
-				grid-template-rows: repeat(10, 1fr);
 
-				.cell {
-					border: 1px solid black;
-					width: 1em;
-					height: 1em;
-					
+				input {
+					position: absolute;
+					top: -100%;
+
+					&:focus {
+						+ label {
+							// outline with firefox style
+							outline: 2px solid #1a73e8;
+						}
+					}
+				}
+				label {
+					cursor: pointer;
 				}
 			}
 		}

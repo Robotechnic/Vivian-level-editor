@@ -5,16 +5,16 @@
 </script>
 
 <main>
-	<Configuration />
-	<Editor />
-	<LevelSelection />
+	<Configuration/>
+	<Editor/>
+	<LevelSelection/>
 </main>
 
 <style lang="scss">
 	main {
-		display: flex;
-		flex-direction: row;
-		width: 100vw;
+		width: 100%;
 		height: 100%;
+		display: flex;
+		overflow:hidden;
 	}
 </style>

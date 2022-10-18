@@ -2,20 +2,43 @@
 	import InputGroup from "./components/inputGroup.svelte"
 	import TitleNav from "./components/titleNav.svelte"
 	import { levelWidth, levelHeight, levelStore } from "./stores/levelStore"
+	import { tiles } from "./stores/tileStore"
 
-	let tiles: Array<Number> = [1, 2, 3, 4, 5, 6, 7]
 	let value: Number = 0
+	let files: FileList = null
 
-	const addTile = (event) => {
-		tiles = [...tiles, tiles.length + 1]
+	const addTile = () => {
+		let file = files[0]
+		let reader = new FileReader()
+		reader.onload = () => {
+			tiles.update((tiles) => {
+				return [
+					...tiles, 
+					{ 
+						name: file.name, 
+						data: reader.result as string
+					}
+				]
+			})
+		}
+		reader.readAsDataURL(file)
 	}
 
 	
-	const resizeLevel = (event) => {
+	const resizeLevel = () => {
 		levelStore.resize(
 			$levelWidth,
 			$levelHeight
 		)
+	}
+
+	const deleteProject = () => {
+		const proced : boolean = confirm("Are you sure you want to delete this project?")
+		if (proced) {
+			levelStore.reset()
+			tiles.set([])
+			location.reload()
+		}
 	}
 </script>
 
@@ -25,6 +48,7 @@
 			<h3>Project Manager</h3>
 			<button> Import level set </button>
 			<button> Export level set </button>
+			<button class="warn" on:click|preventDefault={deleteProject}> Delete current project</button>
 		</div>
 		
 		<div class="gridSize">
@@ -49,23 +73,34 @@
 		</div>
 
 		<div class="tileSelector">
-			<h3>Tile selector :</h3>
+			<h3>Tile selector : {value}</h3>
 			<ul class="tileSelector__itemList">
-				{#each tiles as tile, id}
+				{#each $tiles as tile, id}
 					<li class="tileSelector__itemList__tile">
 						<input
 							type="radio"
 							name={"tile" + id}
 							id={"tile" + id}
-							value={tile}
+							accept="image/*"
 							bind:group={value}
+							value={id}
 						/>
-						<label for={"tile" + id}>{tile}</label>
+						<label 
+							for={"tile" + id}
+							class:current={value == id}
+							>
+							<img src={tile.data} alt={tile.name} />
+						</label>
 					</li>
 				{/each}
 				<li class="tileSelector__itemList__tile">
-					<button id="newTileButton" on:click|preventDefault={addTile}>+</button>
-					<label for="newTileButton">+</label>
+					<input 
+						type="file" 
+						id="newTileButton" 
+						bind:files={files} 
+						on:change|preventDefault={addTile}
+						/>
+					<label for="newTileButton" class="noBg">+</label>
 				</li>
 			</ul>
 		</div>
@@ -77,13 +112,16 @@
 		padding: 1em 1rem;
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
 		overflow-y: scroll;
+
+		h3 {
+			margin-bottom: .2em;
+		}
 
 		.fileManager {
 			display: flex;
 			flex-direction: column;
-			button:nth-child(2) {
+			button:not(:last-child) {
 				margin-bottom: 1rem;
 			}
 		}
@@ -109,9 +147,16 @@
 					margin: 0;
 					padding: 0;
 
-					input,
-					button {
-						display: none;
+					input {
+						position: absolute;
+						top: -100%;
+
+						&:focus {
+							+ label {
+								// outline with firefox style
+								outline: 2px solid #1a73e8;
+							}
+						}
 					}
 
 					label {
@@ -124,6 +169,24 @@
 						aspect-ratio: 1/1;
 						width: 100%;
 						cursor: pointer;
+						box-sizing: border-box;
+
+						&:not(.noBg) {
+							--grid-color: #cdcdcd;
+							background-image: linear-gradient(45deg, var(--grid-color) 25%, transparent 25%, transparent 75%, var(--grid-color) 75%), linear-gradient(45deg, var(--grid-color) 25%, transparent 25%, transparent 75%, var(--grid-color) 75%);
+							background-size: 16px 16px;
+							background-position: 0 0, 8px 8px;
+						}
+
+						img {
+							max-width: 100%;
+							max-height: 100%;
+						}
+
+						&.current {
+							//border: solid var(--text-color) 2px;
+							box-shadow: 0 0 4px 0.5px var(--text-color);
+						}
 					}
 				}
 

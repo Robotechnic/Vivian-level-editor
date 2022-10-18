@@ -6,6 +6,7 @@
 <nav 
 	class:leftShadow={shadow=="left"}
 	class:rightShadow={shadow=="right"}
+	class={$$props.class}
 >
 	<h2>{title}</h2>
 	<hr/>
@@ -19,6 +20,7 @@
 			text-align: center;
 			padding: 0 1rem;
 			min-width: max-content;
+			width: calc(100% - 2rem);
 		}
 		hr {
 			width:100%;
@@ -32,9 +34,9 @@
 			box-shadow: 10px 0px 10px -10px var(--text-color);
 		}
 		
-		z-index: 1;
 		max-height: var(--app-height);
 		width: min-content;
+		max-width: 20%;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;

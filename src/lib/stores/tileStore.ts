@@ -14,3 +14,5 @@ if (images) {
 tiles.subscribe(value => {
 	localStorage.setItem("images", JSON.stringify(value))
 })
+
+export const selectedTile = writable<number>(0)

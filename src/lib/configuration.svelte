@@ -2,9 +2,9 @@
 	import InputGroup from "./components/inputGroup.svelte"
 	import TitleNav from "./components/titleNav.svelte"
 	import { levelWidth, levelHeight, levelStore } from "./stores/levelStore"
-	import { tiles } from "./stores/tileStore"
+	import { tiles, selectedTile } from "./stores/tileStore"
+	import trash from "../assets/trash.svg"
 
-	let value: Number = 0
 	let files: FileList = null
 
 	const addTile = () => {
@@ -24,6 +24,12 @@
 		reader.readAsDataURL(file)
 	}
 
+	const keyCheck = (event : KeyboardEvent) => {
+		if (event.key === "Enter") {
+			resizeLevel()
+			event.preventDefault()
+		}
+	}
 	
 	const resizeLevel = () => {
 		levelStore.resize(
@@ -37,7 +43,6 @@
 		if (proced) {
 			levelStore.reset()
 			tiles.set([])
-			location.reload()
 		}
 	}
 </script>
@@ -59,6 +64,7 @@
 				type="number"
 				inputParams={{ min: 0, max: 100, step: 1}}
 				bind:value={$levelWidth}
+				on:keypress={keyCheck}
 			/>
 			<InputGroup
 				label="Height:"
@@ -66,6 +72,7 @@
 				type="number"
 				inputParams={{ min: 0, max: 100, step: 1}}
 				bind:value={$levelHeight}
+				on:keypress={keyCheck}
 			/>
 			<button on:click|preventDefault={resizeLevel}>
 				Resize
@@ -73,22 +80,37 @@
 		</div>
 
 		<div class="tileSelector">
-			<h3>Tile selector : {value}</h3>
+			<h3>Tile selector : {$selectedTile}</h3>
 			<ul class="tileSelector__itemList">
+				<li class="tileSelector__itemList__tile">
+					<input
+						type="radio"
+						name="tileEraser"
+						id="tileEraser"
+						bind:group={$selectedTile}
+						value={-1}
+					/>
+					<label 
+						for="tileEraser"
+						class:current={$selectedTile == -1}
+						class="noBg"
+					>
+						<img src={trash} alt="Empty tile" />
+					</label>
+				</li>
 				{#each $tiles as tile, id}
 					<li class="tileSelector__itemList__tile">
 						<input
 							type="radio"
 							name={"tile" + id}
 							id={"tile" + id}
-							accept="image/*"
-							bind:group={value}
+							bind:group={$selectedTile}
 							value={id}
 						/>
 						<label 
 							for={"tile" + id}
-							class:current={value == id}
-							>
+							class:current={$selectedTile == id}
+						>
 							<img src={tile.data} alt={tile.name} />
 						</label>
 					</li>
@@ -97,6 +119,7 @@
 					<input 
 						type="file" 
 						id="newTileButton" 
+						accept="*.png, *.jpg, *.jpeg"
 						bind:files={files} 
 						on:change|preventDefault={addTile}
 						/>
@@ -176,11 +199,16 @@
 							background-image: linear-gradient(45deg, var(--grid-color) 25%, transparent 25%, transparent 75%, var(--grid-color) 75%), linear-gradient(45deg, var(--grid-color) 25%, transparent 25%, transparent 75%, var(--grid-color) 75%);
 							background-size: 16px 16px;
 							background-position: 0 0, 8px 8px;
+
+							img {
+								max-width: 100%;
+								max-height: 100%;
+							}
 						}
 
-						img {
-							max-width: 100%;
-							max-height: 100%;
+						&.noBg img {
+							max-width: 80%;
+							max-height: 80%;
 						}
 
 						&.current {

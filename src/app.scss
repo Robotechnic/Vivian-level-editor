@@ -6,7 +6,6 @@
 	--primary-dark: #005A9C;
 	--text-color: #080708;
 	--header-height: 3rem;
-	--app-height: calc(100vh - var(--header-height));
 }
 
 body {
@@ -40,8 +39,12 @@ header {
 }
 
 #app {
-	height: var(--app-height);
-	max-height: var(--app-height);
+	height: 100vh;
+	max-height: 100vh;
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
 
 

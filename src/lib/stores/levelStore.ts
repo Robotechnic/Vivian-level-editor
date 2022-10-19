@@ -4,8 +4,36 @@ type LevelMatrix = Array<Array<number>>
 
 // setup stores
 export const level = writable(-1)
-export const levelWidth = writable(10)
-export const levelHeight = writable(10)
+
+function createRangeStore(value : number, min : number, max: number) {
+	const { subscribe, set, update } = writable<number>(value)
+
+	return {
+		subscribe,
+		set(value: number) {
+			if (value < min) {
+				value = min
+			} else if (value > max) {
+				value = max
+			}
+			set(value)
+		},
+		update(updater : (value: number) => number) {
+			update(n => {
+				n = updater(n)
+				if (n < min) {
+					n = min
+				} else if (n > max) {
+					n = max
+				}
+				return n
+			})
+		}
+	}
+}
+
+export const levelWidth = createRangeStore(10, 1, 50)
+export const levelHeight = createRangeStore(10, 1, 50)
 
 function createLevelStore() {
 	const { subscribe, set, update } = writable<Array<LevelMatrix>>(new Array<LevelMatrix>())
@@ -20,7 +48,7 @@ function createLevelStore() {
 			update((levels: Array<LevelMatrix>) => {
 				return [
 					...levels,
-					Array<Array<number>>(get(levelHeight)).fill(Array<number>(get(levelWidth)).fill(0))
+					Array<Array<number>>(get(levelHeight)).fill(Array<number>(get(levelWidth)).fill(-1))
 				]
 			})
 		},
@@ -50,6 +78,7 @@ function createLevelStore() {
 		 * @param value value to set at the given position
 		 */
 		setLevelCell(index: number, x: number, y: number, value: number) {
+			console.log("setLevelCell", index, x, y, value)
 			update((levels: Array<LevelMatrix>) => {
 				levels[index][x][y] = value
 				return levels
@@ -69,7 +98,7 @@ function createLevelStore() {
 						else
 							return [
 								...row,
-								...Array<number>(width - row.length).fill(0)
+								...Array<number>(width - row.length).fill(-1)
 							]
 					})
 					if (editedList.length >= height)
@@ -77,7 +106,7 @@ function createLevelStore() {
 					else
 						return [
 							...editedList, 
-							...Array<Array<number>>(height - editedList.length).fill(Array<number>(width).fill(0))
+							...Array.from({length:height - editedList.length},e => Array<number>(width).fill(-1))
 						]
 				})
 			})
@@ -86,7 +115,7 @@ function createLevelStore() {
 		 * delete all levels in the project
 		 */
 		reset() {
-			set(new Array<LevelMatrix>())
+			update((levels : Array<LevelMatrix>) => new Array<LevelMatrix>())
 		}
 	}
 }

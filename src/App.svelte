@@ -4,6 +4,9 @@
 	import LevelSelection from "./lib/levelSelection.svelte"
 </script>
 
+<header>
+	<h1>Vivian level Editor</h1>
+</header>
 <main>
 	<Configuration/>
 	<Editor/>

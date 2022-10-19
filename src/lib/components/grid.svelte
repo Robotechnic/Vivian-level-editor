@@ -20,8 +20,8 @@
 			{#each row as cell, j}
 				<img
 					class="grid__row__cell"
-					src={cell == 0 ? empty : $tiles[cell].data}
-					alt={cell == 0 ? "Empty cell" : tiles[cell].name}
+					src={cell == -1 ? empty : $tiles[cell].data}
+					alt={cell == -1 ? "Empty cell" : $tiles[cell].name}
 					on:click={() => {click(i, j)}}
 					on:keydown
 				/>

@@ -1,18 +1,26 @@
 <script lang="ts">
-	import Grid from "./components/grid.svelte";
-import {levelStore, level } from "./stores/levelStore"
-    import { tiles } from "./stores/tileStore"
+	import Grid from "./components/grid.svelte"
+	import {levelStore, level } from "./stores/levelStore"
+	import { selectedTile } from "./stores/tileStore"
 
 	const addNewLevel = () => {
 		levelStore.addLevel();
 		level.set($levelStore.length - 1);
+	}
+
+	const setTile = (e) => {
+		console.log($selectedTile)
+		levelStore.setLevelCell($level, e.detail.x, e.detail.y, $selectedTile);
 	}
 </script>
 
 <section class="editor">
 	{#if $level != -1 && $levelStore.length > 0}
 		<div class="editor__gridContener">
-			<Grid gridId={$level} />
+			<Grid 
+				gridId={$level} 
+				on:click={setTile}
+			/>
 		</div>
 	{:else if $levelStore.length == 0}
 		<div class="center">

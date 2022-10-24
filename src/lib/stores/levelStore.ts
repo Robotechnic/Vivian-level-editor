@@ -48,7 +48,7 @@ function createLevelStore() {
 			update((levels: Array<LevelMatrix>) => {
 				return [
 					...levels,
-					Array<Array<number>>(get(levelHeight)).fill(Array<number>(get(levelWidth)).fill(-1))
+					Array.from({ length: get(levelHeight) }, e => Array<number>(get(levelWidth)).fill(-1))
 				]
 			})
 		},

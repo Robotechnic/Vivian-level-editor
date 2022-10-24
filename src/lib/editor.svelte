@@ -18,7 +18,8 @@
 	{#if $level != -1 && $levelStore.length > 0}
 		<div class="editor__gridContener">
 			<Grid 
-				gridId={$level} 
+				gridId={$level}
+				interactive={true}
 				on:click={setTile}
 			/>
 		</div>

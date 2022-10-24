@@ -19,7 +19,7 @@
 					<li>
 						<input type="radio" name="level" id="level-{i}" value={i} bind:group={$level}/>
 						<label class="levelList__list__grid" for="level-{i}">
-							<Grid gridId={i} />
+							<Grid gridId={i} interactive={false}/>
 						</label>
 					</li>
 				{/each}

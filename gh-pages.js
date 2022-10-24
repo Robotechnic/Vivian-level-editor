@@ -2,7 +2,7 @@ import ghpages from "gh-pages"
 import { execSync } from "child_process"
 
 // build project
-execSync("npm run build")
+execSync("npm run build", { stdio: "inherit" })
 
 // deploy
 ghpages.publish("dist", {
@@ -11,9 +11,11 @@ ghpages.publish("dist", {
 	message: "AUtomatic deployment with gh-pages",
 	remote: "origin",
 	push: true,
-	silent: false,
-
+	silent: false
+}, (err) => {
+	if (err) {
+		console.error(err)
+	}
+	// clean folder after deploy
+	execSync("rm -rf dist", { stdio: "inherit" })
 })
-
-// clean folder
-execSync("rm -rf dist")

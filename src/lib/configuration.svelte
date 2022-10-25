@@ -5,41 +5,40 @@
 	import { tiles, selectedTile } from "./stores/tileStore"
 	import trash from "../assets/trash.svg"
 
-	let files: FileList = null
+	let files: FileList;
 
 	const addTile = () => {
 		let file = files[0]
 		let reader = new FileReader()
 		reader.onload = () => {
-			tiles.update((tiles) => {
+			tiles.update(tiles => {
 				return [
-					...tiles, 
-					{ 
-						name: file.name, 
-						data: reader.result as string
-					}
+					...tiles,
+					{
+						name: file.name,
+						data: reader.result as string,
+					},
 				]
 			})
 		}
 		reader.readAsDataURL(file)
 	}
 
-	const keyCheck = (event : KeyboardEvent) => {
+	const keyCheck = (event: KeyboardEvent) => {
 		if (event.key === "Enter") {
 			resizeLevel()
 			event.preventDefault()
 		}
 	}
-	
+
 	const resizeLevel = () => {
-		levelStore.resize(
-			$levelWidth,
-			$levelHeight
-		)
+		levelStore.resize($levelWidth, $levelHeight)
 	}
 
 	const deleteProject = () => {
-		const proced : boolean = confirm("Are you sure you want to delete this project?")
+		const proced: boolean = confirm(
+			"Are you sure you want to delete this project?"
+		)
 		if (proced) {
 			levelStore.reset()
 			tiles.set([])
@@ -53,16 +52,18 @@
 			<h3>Project Manager</h3>
 			<button> Import level set </button>
 			<button> Export level set </button>
-			<button class="warn" on:click|preventDefault={deleteProject}> Delete current project</button>
+			<button class="warn" on:click|preventDefault={deleteProject}>
+				Delete current project</button
+			>
 		</div>
-		
+
 		<div class="gridSize">
 			<h3>Grid Size</h3>
 			<InputGroup
 				label="Width:"
 				name="width"
 				type="number"
-				inputParams={{ min: 0, max: 100, step: 1}}
+				inputParams={{ min: 0, max: 100, step: 1 }}
 				bind:value={$levelWidth}
 				on:keypress={keyCheck}
 			/>
@@ -70,13 +71,11 @@
 				label="Height:"
 				name="height"
 				type="number"
-				inputParams={{ min: 0, max: 100, step: 1}}
+				inputParams={{ min: 0, max: 100, step: 1 }}
 				bind:value={$levelHeight}
 				on:keypress={keyCheck}
 			/>
-			<button on:click|preventDefault={resizeLevel}>
-				Resize
-			</button>
+			<button on:click|preventDefault={resizeLevel}> Resize </button>
 		</div>
 
 		<div class="tileSelector">
@@ -90,7 +89,7 @@
 						bind:group={$selectedTile}
 						value={-1}
 					/>
-					<label 
+					<label
 						for="tileEraser"
 						class:current={$selectedTile == -1}
 						class="noBg"
@@ -102,13 +101,13 @@
 					<li class="tileSelector__itemList__tile">
 						<input
 							type="radio"
-							name={"tile" + id}
-							id={"tile" + id}
+							name={"tile" + String(id)}
+							id={"tile" + String(id)}
 							bind:group={$selectedTile}
 							value={id}
 						/>
-						<label 
-							for={"tile" + id}
+						<label
+							for={"tile" + String(id)}
 							class:current={$selectedTile == id}
 						>
 							<img src={tile.data} alt={tile.name} />
@@ -116,13 +115,13 @@
 					</li>
 				{/each}
 				<li class="tileSelector__itemList__tile">
-					<input 
-						type="file" 
-						id="newTileButton" 
+					<input
+						type="file"
+						id="newTileButton"
 						accept="*.png, *.jpg, *.jpeg"
-						bind:files={files} 
+						bind:files
 						on:change|preventDefault={addTile}
-						/>
+					/>
 					<label for="newTileButton" class="noBg">+</label>
 				</li>
 			</ul>
@@ -138,7 +137,7 @@
 		overflow-y: scroll;
 
 		h3 {
-			margin-bottom: .2em;
+			margin-bottom: 0.2em;
 		}
 
 		.fileManager {
@@ -196,7 +195,20 @@
 
 						&:not(.noBg) {
 							--grid-color: #cdcdcd;
-							background-image: linear-gradient(45deg, var(--grid-color) 25%, transparent 25%, transparent 75%, var(--grid-color) 75%), linear-gradient(45deg, var(--grid-color) 25%, transparent 25%, transparent 75%, var(--grid-color) 75%);
+							background-image: linear-gradient(
+									45deg,
+									var(--grid-color) 25%,
+									transparent 25%,
+									transparent 75%,
+									var(--grid-color) 75%
+								),
+								linear-gradient(
+									45deg,
+									var(--grid-color) 25%,
+									transparent 25%,
+									transparent 75%,
+									var(--grid-color) 75%
+								);
 							background-size: 16px 16px;
 							background-position: 0 0, 8px 8px;
 

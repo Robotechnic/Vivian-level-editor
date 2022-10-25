@@ -1,25 +1,29 @@
 <script lang="ts">
 	import { levelStore, level } from "./stores/levelStore"
-    import TitleNav from "./components/titleNav.svelte"
-    import Grid from "./components/grid.svelte"
-	
-	const addLevel = (event) => {
-		levelStore.addLevel();
+	import TitleNav from "./components/titleNav.svelte"
+	import Grid from "./components/grid.svelte"
+
+	const addLevel = (_ : MouseEvent) => {
+		levelStore.addLevel()
 	}
 </script>
 
 <TitleNav title="Level Selector" shadow="left">
-	<button on:click={addLevel}>
-		Add a new level
-	</button>
+	<button on:click={addLevel}> Add a new level </button>
 	<div class="levelList">
 		{#if $levelStore.length != 0}
 			<ul class="levelList__list">
 				{#each $levelStore as levelGrid, i}
 					<li>
-						<input type="radio" name="level" id="level-{i}" value={i} bind:group={$level}/>
+						<input
+							type="radio"
+							name="level"
+							id="level-{i}"
+							value={i}
+							bind:group={$level}
+						/>
 						<label class="levelList__list__grid" for="level-{i}">
-							<Grid gridId={i} interactive={false}/>
+							<Grid gridId={i} interactive={false} />
 						</label>
 					</li>
 				{/each}
@@ -45,20 +49,19 @@
 		box-sizing: border-box;
 
 		&__list {
-			margin:0;
-			padding:0;
+			margin: 0;
+			padding: 0;
 			display: flex;
 			flex-direction: column;
-			flex:1;
+			flex: 1;
 			gap: 1rem;
 
 			li {
 				list-style: none;
 				margin: 0;
-				padding:0;
+				padding: 0;
 				cursor: pointer;
 				overflow: hidden;
-
 
 				input {
 					position: absolute;

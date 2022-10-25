@@ -15,7 +15,6 @@
 		}
 		dispatch("input", value)
 	}
-
 </script>
 
 <div>

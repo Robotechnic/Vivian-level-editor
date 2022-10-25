@@ -1,34 +1,33 @@
 <script lang="ts">
 	import Grid from "./components/grid.svelte"
-	import {levelStore, level } from "./stores/levelStore"
+	import { levelStore, level } from "./stores/levelStore"
 	import { selectedTile } from "./stores/tileStore"
 
 	const addNewLevel = () => {
-		levelStore.addLevel();
-		level.set($levelStore.length - 1);
+		levelStore.addLevel()
+		level.set($levelStore.length - 1)
 	}
 
-	const setTile = (e) => {
+	type Vector = {
+		x : number, 
+		y : number
+	}
+
+	const setTile = (e : CustomEvent<Vector>) => {
 		console.log($selectedTile)
-		levelStore.setLevelCell($level, e.detail.x, e.detail.y, $selectedTile);
+		levelStore.setLevelCell($level, e.detail.x, e.detail.y, $selectedTile)
 	}
 </script>
 
 <section class="editor">
 	{#if $level != -1 && $levelStore.length > 0}
 		<div class="editor__gridContener">
-			<Grid 
-				gridId={$level}
-				interactive={true}
-				on:click={setTile}
-			/>
+			<Grid gridId={$level} interactive={true} on:click={setTile} />
 		</div>
 	{:else if $levelStore.length == 0}
 		<div class="center">
 			<p>There is currently no levels.</p>
-			<button on:click={addNewLevel}>
-				Add a new level
-			</button>
+			<button on:click={addNewLevel}> Add a new level </button>
 		</div>
 	{:else}
 		<p class="center">There is currently no level selected.</p>
@@ -39,9 +38,10 @@
 	.editor {
 		max-height: var(--app-height);
 		overflow: scroll;
-		flex:1;
+		flex: 1;
 
-		&__gridContener, .center {
+		&__gridContener,
+		.center {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -49,8 +49,8 @@
 			height: 100%;
 			width: 100%;
 			font-size: 3em;
-			margin:0;
-			padding:0;
+			margin: 0;
+			padding: 0;
 		}
 	}
 </style>

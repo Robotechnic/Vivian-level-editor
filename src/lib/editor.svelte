@@ -22,7 +22,7 @@
 <section class="editor">
 	{#if $level != -1 && $levelStore.length > 0}
 		<div class="editor__gridContener">
-			<Grid gridId={$level} interactive={true} on:click={setTile} />
+			<Grid gridId={$level} on:click={setTile} />
 		</div>
 	{:else if $levelStore.length == 0}
 		<div class="center">

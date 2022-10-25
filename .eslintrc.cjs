@@ -28,6 +28,7 @@ module.exports = {
 	],
 	settings: {
 		"svelte3/typescript": require("typescript"),
+		"svelte3/named-blocks": true,
 	},
 	ignorePatterns: [
 		"node_modules",

@@ -1,6 +1,6 @@
 import { get, writable } from "svelte/store"
 
-type LevelMatrix = Array<Array<number>>
+export type LevelMatrix = Array<Array<number>>
 
 // setup stores
 export const level = writable(-1)
@@ -82,9 +82,8 @@ function createLevelStore() {
 		 * @param value value to set at the given position
 		 */
 		setLevelCell(index: number, x: number, y: number, value: number) {
-			console.log("setLevelCell", index, x, y, value)
 			update((levels: Array<LevelMatrix>) => {
-				levels[index][x][y] = value
+				levels[index][y][x] = value
 				return levels
 			})
 		},

@@ -11,12 +11,16 @@
 		let file = files[0]
 		let reader = new FileReader()
 		reader.onload = () => {
+			const image = new Image()
+			image.src = reader.result as string
+			image.title = file.name
+
 			tiles.update(tiles => {
 				return [
 					...tiles,
 					{
 						name: file.name,
-						data: reader.result as string,
+						data: image,
 					},
 				]
 			})
@@ -110,7 +114,7 @@
 							for={"tile" + String(id)}
 							class:current={$selectedTile == id}
 						>
-							<img src={tile.data} alt={tile.name} />
+							<img src={tile.data.src} alt={tile.name} />
 						</label>
 					</li>
 				{/each}

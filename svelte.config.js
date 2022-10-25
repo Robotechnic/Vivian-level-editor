@@ -7,10 +7,13 @@ export default {
 	alias: {
 		assets: "Vivian-level-editor/assets",
 	},
+	compilerOptions: {
+		css: false
+	},
 	appDir: "Vivian-level-editor",
 	paths: {
-		assets: "Vivian-level-editor/assets",
-		base: "Vivian-level-editor",
+		assets: "/Vivian-level-editor/assets",
+		base: "/Vivian-level-editor",
 	},
 	version: 1,
 }

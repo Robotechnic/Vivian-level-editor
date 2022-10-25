@@ -129,9 +129,9 @@ function createLevelStore() {
 export const levelStore = createLevelStore()
 
 type localStorage = {
-	levels: Array<LevelMatrix>,
-	width: number,
-	height: number,
+	levels: Array<LevelMatrix>
+	width: number
+	height: number
 }
 
 // load localstorage data

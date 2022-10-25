@@ -8,7 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"format": "prettier --write ./src/**/*.{ts,svelte,scss,json}",
+		"format": "prettier --write ./src/**/*.{ts,svelte,scss}",
 		"lint": "eslint ./src/**/*.{ts,svelte}",
 		"lint:fix": "eslint --fix ./src/**/*.{ts,svelte}",
 		"gh-pages": "node ./gh-pages.js"

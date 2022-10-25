@@ -3,7 +3,7 @@
 	import TitleNav from "./components/titleNav.svelte"
 	import Grid from "./components/grid.svelte"
 
-	const addLevel = (_ : MouseEvent) => {
+	const addLevel = (_: MouseEvent) => {
 		levelStore.addLevel()
 	}
 </script>

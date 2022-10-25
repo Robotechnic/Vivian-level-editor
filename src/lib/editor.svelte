@@ -9,11 +9,11 @@
 	}
 
 	type Vector = {
-		x : number, 
-		y : number
+		x: number
+		y: number
 	}
 
-	const setTile = (e : CustomEvent<Vector>) => {
+	const setTile = (e: CustomEvent<Vector>) => {
 		console.log($selectedTile)
 		levelStore.setLevelCell($level, e.detail.x, e.detail.y, $selectedTile)
 	}

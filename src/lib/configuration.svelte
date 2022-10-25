@@ -5,7 +5,7 @@
 	import { tiles, selectedTile } from "./stores/tileStore"
 	import trash from "../assets/trash.svg"
 
-	let files: FileList;
+	let files: FileList
 
 	const addTile = () => {
 		let file = files[0]

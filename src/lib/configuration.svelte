@@ -98,7 +98,11 @@
 						class:current={$selectedTile == -1}
 						class="noBg"
 					>
-						<img src={trash} alt="Empty tile" />
+						<img
+							src={trash}
+							alt="Eraser"
+							title="Eraser"
+						/>
 					</label>
 				</li>
 				{#each $tiles as tile, id}
@@ -114,7 +118,11 @@
 							for={"tile" + String(id)}
 							class:current={$selectedTile == id}
 						>
-							<img src={tile.data.src} alt={tile.name} />
+							<img
+								src={tile.data.src}
+								alt={tile.name}
+								title={tile.name}
+							/>
 						</label>
 					</li>
 				{/each}

@@ -18,9 +18,9 @@
 			line.forEach((tile : number, x : number) => {
 				if (tile === -1) {
 					ctx.fillStyle = "white"
-					ctx?.fillRect(x * 32, y * 32, 32, 32)
+					ctx.fillRect(x * 32, y * 32, 32, 32)
 				} else {
-					ctx?.drawImage($tiles[tile].data, x * 32, y * 32, 32, 32)
+					ctx.drawImage($tiles[tile].data, x * 32, y * 32, 32, 32)
 				}
 			})
 		})

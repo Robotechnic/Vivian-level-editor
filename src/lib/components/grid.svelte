@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tiles } from "../stores/tileStore"
-	import { levelStore, } from "../stores/levelStore"
+	import { levelStore } from "../stores/levelStore"
 	import { onMount, afterUpdate, createEventDispatcher } from "svelte"
 
 
@@ -14,9 +14,13 @@
 	const drawTiles = () => {
 		if (!ctx) return
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
+		let middle : number = Math.floor($levelStore[gridId].length / 2)
 		$levelStore[gridId].forEach((line : Array<number>, y : number) => {
 			line.forEach((tile : number, x : number) => {
-				if (tile === -1) {
+				if (y == middle) {
+					ctx.fillStyle = "black"
+					ctx.fillRect(x * 32, y * 32, 32, 32)
+				} else if (tile === -1) {
 					ctx.fillStyle = "white"
 					ctx.fillRect(x * 32, y * 32, 32, 32)
 				} else {

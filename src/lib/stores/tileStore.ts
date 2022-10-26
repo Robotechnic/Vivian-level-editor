@@ -44,4 +44,4 @@ tiles.subscribe(value => {
 	)
 })
 
-export const selectedTile = writable<number>(0)
+export const selectedTile = writable<number>(-1)

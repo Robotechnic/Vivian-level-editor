@@ -33,7 +33,7 @@ function createRangeStore(value: number, min: number, max: number) {
 }
 
 export const levelWidth = createRangeStore(10, 1, 50)
-export const levelHeight = createRangeStore(10, 1, 50)
+export const levelHeight = createRangeStore(10, 1, 20)
 
 function createLevelStore() {
 	const { subscribe, set, update } = writable<Array<LevelMatrix>>(
@@ -50,7 +50,7 @@ function createLevelStore() {
 			update((levels: Array<LevelMatrix>) => {
 				return [
 					...levels,
-					Array.from({ length: get(levelHeight) }, _ =>
+					Array.from({ length: get(levelHeight) * 2 + 1 }, _ =>
 						Array<number>(get(levelWidth)).fill(-1)
 					),
 				]
@@ -82,37 +82,41 @@ function createLevelStore() {
 		 * @param value value to set at the given position
 		 */
 		setLevelCell(index: number, x: number, y: number, value: number) {
+			if (y == get(levelHeight)) return
 			update((levels: Array<LevelMatrix>) => {
 				levels[index][y][x] = value
 				return levels
 			})
 		},
 		/**
-		 * set width and height of each levels
+		 * set width and height of each levels it add or remove same amout of lines at start and end of each level
 		 * @param width new level width
 		 * @param height new level height
 		 */
 		resize(width: number, height: number) {
+			height = height * 2 + 1
 			update((levels: Array<LevelMatrix>) => {
-				return levels.map((level: LevelMatrix) => {
-					const editedList = level.map((row: Array<number>) => {
-						if (row.length >= width) return row.slice(0, width)
-						else
-							return [
-								...row,
-								...Array<number>(width - row.length).fill(-1),
-							]
+				return levels.map(level => {
+					// add or remove lines at start and end
+					let diff: number = level.length - height
+					if (diff > 0) {
+						level = level.slice(diff / 2, level.length - diff / 2)
+					} else if (diff < 0) {
+						for (let i = 0; i < -diff / 2; i++)
+							level.unshift(Array<number>(width).fill(-1))
+						for (let i = 0; i < -diff / 2; i++)
+							level.push(Array<number>(width).fill(-1))
+					}
+					// add or remove columns
+					level = level.map(line => {
+						if (line.length > width) {
+							line = line.slice(0, width)
+						} else if (line.length < width) {
+							line = [...line, ...Array<number>(width - line.length).fill(-1)]
+						}
+						return line
 					})
-					if (editedList.length >= height)
-						return editedList.slice(0, height)
-					else
-						return [
-							...editedList,
-							...Array.from(
-								{ length: height - editedList.length },
-								_ => Array<number>(width).fill(-1)
-							),
-						]
+					return level
 				})
 			})
 		},

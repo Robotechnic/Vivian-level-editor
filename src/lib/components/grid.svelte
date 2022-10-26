@@ -12,19 +12,18 @@
 	$: height = $levelStore[gridId].length
 
 	const drawTiles = () => {
-		if (ctx) {
-			ctx.clearRect(0, 0, canvas.width, canvas.height)
-			$levelStore[gridId].forEach((line : Array<number>, y : number) => {
-				line.forEach((tile : number, x : number) => {
-					if (tile === -1) {
-						ctx.fillStyle = "white"
-						ctx?.fillRect(x * 32, y * 32, 32, 32)
-					} else {
-						ctx?.drawImage($tiles[tile].data, x * 32, y * 32, 32, 32)
-					}
-				})
+		if (!ctx) return
+		ctx.clearRect(0, 0, canvas.width, canvas.height)
+		$levelStore[gridId].forEach((line : Array<number>, y : number) => {
+			line.forEach((tile : number, x : number) => {
+				if (tile === -1) {
+					ctx.fillStyle = "white"
+					ctx?.fillRect(x * 32, y * 32, 32, 32)
+				} else {
+					ctx?.drawImage($tiles[tile].data, x * 32, y * 32, 32, 32)
+				}
 			})
-		}
+		})
 	}
 
 	const drawGrid = () => {
@@ -56,20 +55,37 @@
 	const dispatch = createEventDispatcher()
 
 	const canvasClick = (event : MouseEvent) => {
-		dispatch("click", toGridCoordinates(event.offsetX, event.offsetY))
+		console.log(event.buttons)
+		if (event.buttons == 2 && !event.shiftKey) {
+			dispatch("erase", toGridCoordinates(event.offsetX, event.offsetY))
+			return false
+		} else if (event.buttons == 1) {
+			dispatch("click", toGridCoordinates(event.offsetX, event.offsetY))
+			return true
+		}
+	}
+
+	const canvasContext = (event : MouseEvent) => {
+		// disable only if shift isn't pressed
+		if (!event.shiftKey) {
+			event.preventDefault()
+			canvasClick(event)
+			return
+		}
 	}
 
 	const canvasDrag = (event : MouseEvent) => {
-		if (event.buttons !== 1) {
-			return
-		}
-		dispatch("click", toGridCoordinates(event.offsetX, event.offsetY))
+		if (event.buttons == 2) 
+			dispatch("erase", toGridCoordinates(event.offsetX, event.offsetY))
+		else if (event.buttons == 1)
+			dispatch("click", toGridCoordinates(event.offsetX, event.offsetY))
 	}
 
 	onMount(() => {
 		ctx = canvas.getContext("2d")
 		if (!ctx) {
 			alert("Could not get canvas context")
+			return
 		}
 		ctx.imageSmoothingEnabled = true
 		console.log("Context loaded")
@@ -93,8 +109,9 @@
 		width={width * 32}
 		height={height * 32}
 		bind:this={canvas}
-		on:click={canvasClick}
+		on:mousedown|preventDefault={canvasClick}
 		on:mousemove={canvasDrag}
+		on:contextmenu={canvasContext}
 	/>
 </div>
 <svelte:window on:resize={drawGrid}/>

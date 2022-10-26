@@ -23,7 +23,7 @@
 							bind:group={$level}
 						/>
 						<label class="levelList__list__grid" for="level-{i}">
-							<Grid gridId={i} interactive={false} />
+							<Grid gridId={i} />
 						</label>
 					</li>
 				{/each}

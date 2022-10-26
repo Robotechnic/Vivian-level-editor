@@ -13,16 +13,27 @@
 		y: number
 	}
 
-	const setTile = (e: CustomEvent<Vector>) => {
-		console.log($selectedTile)
-		levelStore.setLevelCell($level, e.detail.x, e.detail.y, $selectedTile)
+	const setTile = (e: CustomEvent<Vector>, empty: boolean = false) => {
+		console.log(e.detail, empty)
+		levelStore.setLevelCell(
+			$level,
+			e.detail.x,
+			e.detail.y,
+			empty ? -1 : $selectedTile
+		)
 	}
 </script>
 
 <section class="editor">
 	{#if $level != -1 && $levelStore.length > 0}
 		<div class="editor__gridContener">
-			<Grid gridId={$level} on:click={setTile} />
+			<Grid
+				gridId={$level}
+				on:click={setTile}
+				on:erase={event => {
+					setTile(event, true)
+				}}
+			/>
 		</div>
 	{:else if $levelStore.length == 0}
 		<div class="center">

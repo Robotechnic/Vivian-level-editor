@@ -98,11 +98,7 @@
 						class:current={$selectedTile == -1}
 						class="noBg"
 					>
-						<img
-							src={trash}
-							alt="Eraser"
-							title="Eraser"
-						/>
+						<img src={trash} alt="Eraser" title="Eraser" />
 					</label>
 				</li>
 				{#each $tiles as tile, id}

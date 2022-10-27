@@ -33,15 +33,13 @@
 
 <section class="editor">
 	{#if $level != -1 && $levelStore.length > 0}
-		<div class="editor__gridContener">
-			<Grid
-				gridId={$level}
-				on:click={setTile}
-				on:erase={event => {
-					setTile(event, true)
-				}}
-			/>
-		</div>
+		<Grid
+			gridId={$level}
+			on:click={setTile}
+			on:erase={event => {
+				setTile(event, true)
+			}}
+		/>
 	{:else if $levelStore.length == 0}
 		<div class="center">
 			<p>There is currently no levels.</p>
@@ -57,8 +55,11 @@
 		max-height: var(--app-height);
 		overflow: scroll;
 		flex: 1;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		padding: 20px;
 
-		&__gridContener,
 		.center {
 			display: flex;
 			flex-direction: column;

@@ -9,26 +9,31 @@
 	} from "./stores/levelStore"
 	import { tiles, selectedTile } from "./stores/tileStore"
 	import trash from "../assets/trash.svg"
+	import { imageResize } from "./utils/imageSize"
 
 	let files: FileList
+	let hidden: number = -1
 
 	const addTile = () => {
 		let file = files[0]
 		let reader = new FileReader()
 		reader.onload = () => {
 			const image = new Image()
+			image.onload = () => {
+				tiles.update(tiles => {
+					return [
+						...tiles,
+						{
+							name: file.name,
+							data: imageResize(image, 32, 32),
+						},
+					]
+				})
+			}
+
 			image.src = reader.result as string
 			image.title = file.name
-
-			tiles.update(tiles => {
-				return [
-					...tiles,
-					{
-						name: file.name,
-						data: image,
-					},
-				]
-			})
+			image.alt = file.name + " tile"
 		}
 		reader.readAsDataURL(file)
 	}
@@ -52,6 +57,37 @@
 			levelStore.reset()
 			tiles.set([])
 		}
+	}
+
+	const tileDragStart = (event: DragEvent) => {
+		const target = event.target as HTMLLIElement
+		const id: number = parseInt(target.getAttribute("data-id") as string)
+		event.dataTransfer!.setDragImage($tiles[id].data, 16, 16)
+		event.dataTransfer!.dropEffect = "copy"
+
+		setTimeout(() => {
+			hidden = id
+		}, 0)
+	}
+
+	const tileDragOver = (event: DragEvent) => {
+		if (hidden == -1) return
+		let target = event.target as HTMLElement
+		while (!target.classList.contains("tileSelector__itemList__tile"))
+			target = target.parentElement as HTMLElement
+		const id: number = parseInt(target!.getAttribute("data-id") as string)
+		if (id == hidden) return
+		tiles.update(tiles => {
+			const temp = tiles[hidden]
+			tiles[hidden] = tiles[id]
+			tiles[id] = temp
+			return tiles
+		})
+		hidden = id
+	}
+
+	const tileDragEnd = () => {
+		hidden = -1
 	}
 </script>
 
@@ -118,7 +154,15 @@
 					</label>
 				</li>
 				{#each $tiles as tile, id}
-					<li class="tileSelector__itemList__tile">
+					<li
+						class="tileSelector__itemList__tile"
+						class:hidden={hidden == id}
+						draggable="true"
+						data-id={id}
+						on:dragstart={tileDragStart}
+						on:dragover|preventDefault={tileDragOver}
+						on:dragend={tileDragEnd}
+					>
 						<input
 							type="radio"
 							name={"tile" + String(id)}
@@ -134,6 +178,7 @@
 								src={tile.data.src}
 								alt={tile.name}
 								title={tile.name}
+								draggable="false"
 							/>
 						</label>
 					</li>
@@ -193,6 +238,10 @@
 					margin: 0;
 					padding: 0;
 
+					&.hidden {
+						opacity: 0;
+					}
+
 					input {
 						position: absolute;
 						top: -100%;
@@ -216,6 +265,7 @@
 						width: 100%;
 						cursor: pointer;
 						box-sizing: border-box;
+						padding: 0;
 
 						&:not(.noBg) {
 							--grid-color: #cdcdcd;
@@ -239,6 +289,8 @@
 							img {
 								max-width: 100%;
 								max-height: 100%;
+								width: 100%;
+								height: 100%;
 							}
 						}
 

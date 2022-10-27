@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte"
-	export let value: string | Number = ""
+	export let value: string | number | boolean= ""
 	export let label: string = "Input"
 	export let name: string = "input"
 	export let type: string = "text"
@@ -12,6 +12,8 @@
 		value = (event.target as HTMLInputElement).value
 		if (type === "number" || type === "range") {
 			value = Number(value)
+		} else if (type == "checkbox") {
+			value = (event.target as HTMLInputElement).checked
 		}
 		dispatch("input", value)
 	}

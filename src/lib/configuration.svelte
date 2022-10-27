@@ -1,7 +1,12 @@
 <script lang="ts">
 	import InputGroup from "./components/inputGroup.svelte"
 	import TitleNav from "./components/titleNav.svelte"
-	import { levelWidth, levelHeight, levelStore } from "./stores/levelStore"
+	import {
+		levelWidth,
+		levelHeight,
+		levelStore,
+		mirror,
+	} from "./stores/levelStore"
 	import { tiles, selectedTile } from "./stores/tileStore"
 	import trash from "../assets/trash.svg"
 
@@ -80,6 +85,17 @@
 				on:keypress={keyCheck}
 			/>
 			<button on:click|preventDefault={resizeLevel}> Resize </button>
+		</div>
+
+		<div class="mirror">
+			<h3>Mirror</h3>
+			<InputGroup
+				label="Horizontal mirror:"
+				name="mirror"
+				type="checkbox"
+				bind:value={$mirror}
+				inputParams={{ checked: false }}
+			/>
 		</div>
 
 		<div class="tileSelector">

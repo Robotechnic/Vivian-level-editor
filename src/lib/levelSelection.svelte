@@ -1,7 +1,46 @@
 <script lang="ts">
+	import trash from "../assets/trash-white.svg"
+	import copy from "../assets/copy-white.svg"
 	import { levelStore, level } from "./stores/levelStore"
 	import TitleNav from "./components/titleNav.svelte"
 	import Grid from "./components/grid.svelte"
+	import GhostOverlay from "./components/ghostOverlay.svelte"
+
+	const overlayButtons = [
+		{
+			title: "Duplicate Level",
+			icon: copy,
+			action: (childId: number) => {
+				levelStore.pushLevel(
+					$levelStore[childId].map(row => [...row]),
+					childId + 1
+				)
+				level.update(old => {
+					return childId + 1
+				})
+				return null
+			},
+		},
+		{
+			title: "Delete Level",
+			icon: trash,
+			action: (childId: number) => {
+				if ($level == childId) {
+					level.set(-1)
+				} else {
+					level.update(old => {
+						if (old > childId) {
+							return old - 1
+						} else {
+							return old
+						}
+					})
+				}
+				levelStore.removeLevel(childId)
+				return null
+			},
+		},
+	]
 
 	const addLevel = (_: MouseEvent) => {
 		levelStore.addLevel()
@@ -23,7 +62,9 @@
 							bind:group={$level}
 						/>
 						<label class="levelList__list__grid" for="level-{i}">
-							<Grid gridId={i} />
+							<GhostOverlay buttons={overlayButtons} childId={i}>
+								<Grid gridId={i} />
+							</GhostOverlay>
 						</label>
 					</li>
 				{/each}

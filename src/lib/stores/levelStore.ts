@@ -4,6 +4,7 @@ export type LevelMatrix = Array<Array<number>>
 
 // setup stores
 export const level = writable(-1)
+export const mirror = writable(false)
 
 function createRangeStore(value: number, min: number, max: number) {
 	const { subscribe, set, update } = writable<number>(value)
@@ -60,10 +61,21 @@ function createLevelStore() {
 		 * add a new given level to the store
 		 * @param level the level to add in the store
 		 */
-		pushLevel(level: LevelMatrix) {
-			update((levels: Array<LevelMatrix>) => {
-				return [...levels, level]
-			})
+		pushLevel(level: LevelMatrix, index?: number) {
+			if (index === undefined) {
+				update((levels: Array<LevelMatrix>) => {
+					return [...levels, level]
+				})
+			} else {
+				update((levels: Array<LevelMatrix>) => {
+					levels = [
+						...levels.slice(0, index),
+						level,
+						...levels.slice(index),
+					]
+					return levels
+				})
+			}
 		},
 		/**
 		 * remove the level at the given index
@@ -71,7 +83,8 @@ function createLevelStore() {
 		 */
 		removeLevel(index: number) {
 			update((levels: Array<LevelMatrix>) => {
-				return levels.filter((_, i) => i !== index)
+				levels = levels.filter((_, i) => i !== index)
+				return levels
 			})
 		},
 		/**
@@ -98,7 +111,7 @@ function createLevelStore() {
 			update((levels: Array<LevelMatrix>) => {
 				return levels.map(level => {
 					// add or remove lines at start and end
-					let diff: number = level.length - height
+					const diff: number = level.length - height
 					if (diff > 0) {
 						level = level.slice(diff / 2, level.length - diff / 2)
 					} else if (diff < 0) {
@@ -112,7 +125,10 @@ function createLevelStore() {
 						if (line.length > width) {
 							line = line.slice(0, width)
 						} else if (line.length < width) {
-							line = [...line, ...Array<number>(width - line.length).fill(-1)]
+							line = [
+								...line,
+								...Array<number>(width - line.length).fill(-1),
+							]
 						}
 						return line
 					})

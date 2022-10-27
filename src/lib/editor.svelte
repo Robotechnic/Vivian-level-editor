@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Grid from "./components/grid.svelte"
-	import { levelStore, level } from "./stores/levelStore"
+	import { levelStore, level, mirror } from "./stores/levelStore"
 	import { selectedTile } from "./stores/tileStore"
 
 	const addNewLevel = () => {
@@ -14,11 +14,18 @@
 	}
 
 	const setTile = (e: CustomEvent<Vector>, empty: boolean = false) => {
-		console.log(e.detail, empty)
 		levelStore.setLevelCell(
 			$level,
 			e.detail.x,
 			e.detail.y,
+			empty ? -1 : $selectedTile
+		)
+		if (!$mirror) return
+
+		levelStore.setLevelCell(
+			$level,
+			e.detail.x,
+			$levelStore[$level].length - e.detail.y - 1,
 			empty ? -1 : $selectedTile
 		)
 	}

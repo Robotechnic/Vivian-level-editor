@@ -142,6 +142,24 @@ function createLevelStore() {
 		reset() {
 			update((_: Array<LevelMatrix>) => new Array<LevelMatrix>())
 		},
+		/**
+		 * switch two tiles with each other
+		 * @param id1 first  tile index
+		 * @param id2 second tile index
+		 */
+		switchTiles(id1: number, id2: number) {
+			update((levels: Array<LevelMatrix>) => {
+				return levels.map(level => {
+					return level.map(line => {
+						return line.map(tile => {
+							if (tile == id1) return id2
+							else if (tile == id2) return id1
+							else return tile
+						})
+					})
+				})
+			})
+		},
 	}
 }
 

@@ -1,28 +1,29 @@
 <script lang="ts">
 	import { tiles } from "../stores/tileStore"
-	import { levelStore } from "../stores/levelStore"
-	import { onMount, afterUpdate, createEventDispatcher, onDestroy } from "svelte"
+	import { levelStore, level } from "../stores/levelStore"
+	import { onMount, createEventDispatcher, onDestroy } from "svelte"
 
-
-	export let gridId : number
+	export let gridId: number
 	let canvas: HTMLCanvasElement
 	let ctx: CanvasRenderingContext2D | null = null
-	let width : number
-	let height : number
+	let width: number
+	let height: number
 
 	$: {
 		if (gridId > -1 && gridId < $levelStore.length) {
 			width = $levelStore[gridId][0].length
 			height = $levelStore[gridId].length
+			// draw level only if the correct grid is selected
+			if (gridId === $level) drawGrid()
 		}
 	}
 
 	const drawTiles = () => {
 		if (ctx == null) return
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
-		let middle : number = Math.floor($levelStore[gridId].length / 2)
-		$levelStore[gridId].forEach((line : Array<number>, y : number) => {
-			line.forEach((tile : number, x : number) => {
+		let middle: number = Math.floor($levelStore[gridId].length / 2)
+		$levelStore[gridId].forEach((line: Array<number>, y: number) => {
+			line.forEach((tile: number, x: number) => {
 				if (y == middle) {
 					ctx!.fillStyle = "black"
 					ctx!.fillRect(x * 32, y * 32, 32, 32)
@@ -54,16 +55,16 @@
 		ctx.stroke()
 	}
 
-	const toGridCoordinates = (x : number, y : number) => {
+	const toGridCoordinates = (x: number, y: number) => {
 		return {
-			x: Math.floor(x / canvas.width * width),
-			y: Math.floor(y / canvas.height * height)
+			x: Math.floor((x / canvas.width) * width),
+			y: Math.floor((y / canvas.height) * height),
 		}
 	}
 
 	const dispatch = createEventDispatcher()
 
-	const canvasClick = (event : MouseEvent) => {
+	const canvasClick = (event: MouseEvent) => {
 		if (event.buttons == 2 && !event.shiftKey) {
 			dispatch("erase", toGridCoordinates(event.offsetX, event.offsetY))
 			return false
@@ -73,7 +74,7 @@
 		}
 	}
 
-	const canvasContext = (event : MouseEvent) => {
+	const canvasContext = (event: MouseEvent) => {
 		// disable only if shift isn't pressed
 		if (!event.shiftKey) {
 			event.preventDefault()
@@ -82,8 +83,8 @@
 		}
 	}
 
-	const canvasDrag = (event : MouseEvent) => {
-		if (event.buttons == 2) 
+	const canvasDrag = (event: MouseEvent) => {
+		if (event.buttons == 2)
 			dispatch("erase", toGridCoordinates(event.offsetX, event.offsetY))
 		else if (event.buttons == 1)
 			dispatch("click", toGridCoordinates(event.offsetX, event.offsetY))
@@ -105,19 +106,10 @@
 	onDestroy(() => {
 		ctx = null
 	})
-
-	afterUpdate(() => {
-		if (gridId > -1) {
-			drawGrid()
-		}
-	})
-
-	$: $levelStore[gridId] && drawGrid()
-
 </script>
 
 <div class="grid">
-	<canvas 
+	<canvas
 		width={width * 32}
 		height={height * 32}
 		bind:this={canvas}
@@ -126,7 +118,7 @@
 		on:contextmenu={canvasContext}
 	/>
 </div>
-<svelte:window on:resize={drawGrid}/>
+<svelte:window on:resize={drawGrid} />
 
 <style lang="scss">
 	.grid {

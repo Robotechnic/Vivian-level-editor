@@ -84,6 +84,7 @@
 			tiles[id] = temp
 			return tiles
 		})
+		levelStore.switchTiles(hidden, id)
 		hidden = id
 	}
 

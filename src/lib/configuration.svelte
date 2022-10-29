@@ -10,6 +10,7 @@
 	import { tiles, selectedTile } from "./stores/tileStore"
 	import trash from "../assets/trash.svg"
 	import { imageResize } from "./utils/imageSize"
+	import jszip from "jszip"
 
 	let files: FileList
 	let hidden: number = -1
@@ -88,6 +89,39 @@
 
 	const tileDragEnd = () => {
 		hidden = -1
+	}
+
+	const deleteTile = () => {
+		if ($selectedTile == -1) return
+		tiles.update(tiles => {
+			return tiles.filter((_, index) => index != $selectedTile)
+		})
+		selectedTile.set(-1)
+	}
+
+	const downloadTile = () => {
+		if ($selectedTile == -1) return
+		const link = document.createElement("a")
+		link.download = $tiles[$selectedTile].name
+		link.href = $tiles[$selectedTile].data.src
+		link.click()
+	}
+
+	const downloadTilSet = async () => {
+		const zip = new jszip()
+		$tiles.forEach(tile => {
+			zip.file(tile.name, tile.data.src, { base64: true })
+		})
+		try {
+			const content = await zip.generateAsync({ type: "blob" })
+			const link = document.createElement("a")
+			link.download = "tileset.zip"
+			link.href = URL.createObjectURL(content)
+			link.click()
+		} catch (error) {
+			console.error(error)
+			alert("Something went wrong when downloading the tileset ;(")
+		}
 	}
 </script>
 
@@ -194,6 +228,15 @@
 					<label for="newTileButton" class="noBg">+</label>
 				</li>
 			</ul>
+			<button class="warn" on:click|preventDefault={deleteTile}>
+				Delete current tile
+			</button>
+			<button on:click|preventDefault={downloadTile}>
+				Download current tile
+			</button>
+			<button on:click|preventDefault={downloadTilSet}>
+				Download tileset
+			</button>
 		</div>
 	</form>
 </TitleNav>
@@ -226,6 +269,11 @@
 		}
 
 		.tileSelector {
+			button {
+				margin-top: 1rem;
+				width: 100%;
+			}
+
 			&__itemList {
 				display: grid;
 				grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));

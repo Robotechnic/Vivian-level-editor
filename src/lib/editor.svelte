@@ -13,6 +13,11 @@
 		y: number
 	}
 
+	/**
+	 * set the tile type in the current level at the given coordinates given by the event in grid coordinates
+	 * @param e the click event from the grid
+	 * @param empty if true, set the tile to empty whatever the selected tile is
+	 */
 	const setTile = (e: CustomEvent<Vector>, empty: boolean = false) => {
 		levelStore.setLevelCell(
 			$level,

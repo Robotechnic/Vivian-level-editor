@@ -1,6 +1,5 @@
 import { get, writable } from "svelte/store"
-
-export type LevelMatrix = Array<Array<number>>
+import type { LevelMatrix } from "../utils/levelManager"
 
 // setup stores
 export const level = writable(-1)
@@ -172,22 +171,26 @@ type localStorage = {
 }
 
 // load localstorage data
-const stored = localStorage.getItem("levels")
-if (stored) {
-	const levels = JSON.parse(stored) as localStorage
-	levelStore.set(levels.levels)
-	levelWidth.set(levels.width)
-	levelHeight.set(levels.height)
-}
+if (localStorage) {
+	const stored = localStorage.getItem("levels")
+	if (stored) {
+		const levels = JSON.parse(stored) as localStorage
+		levelStore.set(levels.levels)
+		levelWidth.set(levels.width)
+		levelHeight.set(levels.height)
+	}
 
-// save data in localstorage
-levelStore.subscribe((levels: LevelMatrix[]) => {
-	localStorage.setItem(
-		"levels",
-		JSON.stringify({
-			width: get(levelWidth),
-			height: get(levelHeight),
-			levels,
-		})
-	)
-})
+	// save data in localstorage
+	levelStore.subscribe((levels: LevelMatrix[]) => {
+		localStorage.setItem(
+			"levels",
+			JSON.stringify({
+				width: get(levelWidth),
+				height: get(levelHeight),
+				levels,
+			})
+		)
+	})
+} else {
+	console.warn("localstorage not available")
+}

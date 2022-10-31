@@ -15,6 +15,9 @@
 	let files: FileList
 	let hidden: number = -1
 
+	/**
+	 * add a new tile to the tile list
+	 */
 	const addTile = () => {
 		let file = files[0]
 		let reader = new FileReader()
@@ -107,8 +110,11 @@
 		link.href = $tiles[$selectedTile].data.src
 		link.click()
 	}
-
-	const downloadTilSet = async () => {
+	
+	/**
+	 * compress the tileset into a zip file and send it to the user in a download
+	 */
+	const downloadTileSet = async () => {
 		const zip = new jszip()
 		$tiles.forEach(tile => {
 			zip.file(tile.name, tile.data.src, { base64: true })
@@ -235,7 +241,7 @@
 			<button on:click|preventDefault={downloadTile}>
 				Download current tile
 			</button>
-			<button on:click|preventDefault={downloadTilSet}>
+			<button on:click|preventDefault={downloadTileSet}>
 				Download tileset
 			</button>
 		</div>

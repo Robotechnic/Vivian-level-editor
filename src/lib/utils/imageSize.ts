@@ -15,8 +15,6 @@ export const imageResize = (
 	result.src = canvas.toDataURL()
 	result.alt = image.alt
 	result.title = image.title
-	console.log(image)
-	console.log(result)
 
 	return result
 }

@@ -1,11 +1,11 @@
 import { writable } from "svelte/store"
 
-type Tile = {
+export type Tile = {
 	name: string
 	data: HTMLImageElement
 }
 
-type localStoragetile = {
+export type localStoragetile = {
 	name: string
 	data: string
 }

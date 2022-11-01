@@ -11,9 +11,86 @@
 	import trash from "../assets/trash.svg"
 	import { imageResize } from "./utils/imageSize"
 	import jszip from "jszip"
+	import {
+		packLevel,
+		unpackLevel,
+		type LevelMatrix,
+	} from "./utils/levelManager"
+	import { onDestroy, onMount } from "svelte"
 
 	let files: FileList
 	let hidden: number = -1
+	let levelZipInput: HTMLInputElement
+
+	const exportLevels = async () => {
+		if ($levelStore.length === 0) {
+			alert("No levels to export")
+			return
+		}
+		try {
+			const file = await packLevel($levelStore, $tiles)
+			const link = document.createElement("a")
+			link.href = URL.createObjectURL(file)
+			link.download = "level.zip"
+			link.click()
+		} catch (e) {
+			alert("Error while exporting level")
+			console.error(e)
+		}
+	}
+
+	const importLevels = async (files: FileList) => {
+		// check if file is zip
+		if (files[0].type !== "application/zip") {
+			alert("File is not a zip")
+			return
+		}
+		let zip: jszip
+		try {
+			zip = await jszip.loadAsync(files[0])
+		} catch (error) {
+			alert("File is not a valid zip file")
+			console.error(error)
+			return
+		}
+		try {
+			const level = await unpackLevel(zip)
+			levelStore.reset()
+			level.levels.forEach((level: LevelMatrix) => {
+				levelStore.pushLevel(level)
+			})
+			selectedTile.set(1)
+			tiles.set(level.tiles)
+			levelHeight.set(Math.floor(level.levels[0].length / 2))
+			levelWidth.set(level.levels[0][0].length)
+		} catch (error) {
+			alert("Error durring level import")
+			console.error(error)
+		}
+	}
+
+	const zipInput = (event: InputEvent) => {
+		const input = event.target as HTMLInputElement
+		const files = input.files
+		if (files) {
+			importLevels(files)
+		}
+	}
+
+	onMount(() => {
+		levelZipInput = document.createElement("input")
+		levelZipInput.setAttribute("type", "file")
+		levelZipInput.setAttribute("accept", "*.zip")
+		levelZipInput.style.display = "none"
+		document.body.appendChild(levelZipInput)
+		levelZipInput.addEventListener("change", zipInput as EventListener)
+		console.log(levelZipInput)
+	})
+
+	onDestroy(() => {
+		levelZipInput.removeEventListener("change", zipInput as EventListener)
+		document.body.removeChild(levelZipInput)
+	})
 
 	/**
 	 * add a new tile to the tile list
@@ -34,12 +111,15 @@
 					]
 				})
 			}
+			image.onerror = () => {
+				alert("Invalid file")
+			}
 
 			image.src = reader.result as string
 			image.title = file.name
 			image.alt = file.name + " tile"
 		}
-		reader.readAsDataURL(file)
+		if (file.type) reader.readAsDataURL(file)
 	}
 
 	const keyCheck = (event: KeyboardEvent) => {
@@ -110,7 +190,7 @@
 		link.href = $tiles[$selectedTile].data.src
 		link.click()
 	}
-	
+
 	/**
 	 * compress the tileset into a zip file and send it to the user in a download
 	 */
@@ -136,8 +216,12 @@
 	<form>
 		<div class="fileManager">
 			<h3>Project Manager</h3>
-			<button> Import level set </button>
-			<button> Export level set </button>
+			<button on:click|preventDefault={_ => levelZipInput.click()}>
+				Import level set
+			</button>
+			<button on:click|preventDefault={exportLevels}>
+				Export level set
+			</button>
 			<button class="warn" on:click|preventDefault={deleteProject}>
 				Delete current project</button
 			>

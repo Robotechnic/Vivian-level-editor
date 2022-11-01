@@ -14,11 +14,11 @@
 			width = $levelStore[gridId][0].length
 			height = $levelStore[gridId].length
 			// draw level only if the correct grid is selected
-			if (gridId === $level) drawGrid()
+			if (gridId === $level || levelStore.needUpdate(gridId)) drawGrid()
 		}
 	}
 
-	const drawTiles = () => {
+	export const drawTiles = () => {
 		if (ctx == null) return
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 		let middle: number = Math.floor($levelStore[gridId].length / 2)

@@ -15,7 +15,7 @@
 					$levelStore[childId].map(row => [...row]),
 					childId + 1
 				)
-				level.update(old => {
+				level.update(_ => {
 					return childId + 1
 				})
 				return null
@@ -25,6 +25,7 @@
 			title: "Delete Level",
 			icon: trash,
 			action: (childId: number) => {
+				// delete level and update level selection
 				if ($level == childId) {
 					level.set(-1)
 				} else {
@@ -44,6 +45,9 @@
 
 	const addLevel = (_: MouseEvent) => {
 		levelStore.addLevel()
+		level.update(_ => {
+			return $levelStore.length - 1
+		})
 	}
 </script>
 
@@ -52,7 +56,7 @@
 	<div class="levelList">
 		{#if $levelStore.length != 0}
 			<ul class="levelList__list">
-				{#each $levelStore as levelGrid, i}
+				{#each $levelStore as _, i}
 					<li>
 						<input
 							type="radio"

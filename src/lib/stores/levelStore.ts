@@ -39,6 +39,7 @@ function createLevelStore() {
 	const { subscribe, set, update } = writable<Array<LevelMatrix>>(
 		new Array<LevelMatrix>()
 	)
+	const forceUpdate = writable<Array<boolean>>(new Array<boolean>())
 
 	return {
 		subscribe,
@@ -55,6 +56,7 @@ function createLevelStore() {
 					),
 				]
 			})
+			forceUpdate.update((arr: Array<boolean>) => [...arr, true])
 		},
 		/**
 		 * add a new given level to the store
@@ -65,6 +67,7 @@ function createLevelStore() {
 				update((levels: Array<LevelMatrix>) => {
 					return [...levels, level]
 				})
+				forceUpdate.update((arr: Array<boolean>) => [...arr, true])
 			} else {
 				update((levels: Array<LevelMatrix>) => {
 					levels = [
@@ -73,6 +76,10 @@ function createLevelStore() {
 						...levels.slice(index),
 					]
 					return levels
+				})
+				forceUpdate.update((arr: Array<boolean>) => {
+					arr = [...arr.slice(0, index), true, ...arr.slice(index)]
+					return arr
 				})
 			}
 		},
@@ -84,6 +91,13 @@ function createLevelStore() {
 			update((levels: Array<LevelMatrix>) => {
 				levels = levels.filter((_, i) => i !== index)
 				return levels
+			})
+			forceUpdate.update((arr: Array<boolean>) => {
+				arr = arr.filter((_, i) => i !== index)
+				for (let i = index; i < arr.length; i++) {
+					arr[i] = true
+				}
+				return arr
 			})
 		},
 		/**
@@ -134,12 +148,16 @@ function createLevelStore() {
 					return level
 				})
 			})
+			forceUpdate.update((arr: Array<boolean>) => {
+				return arr.map(_ => true)
+			})
 		},
 		/**
 		 * delete all levels in the project
 		 */
 		reset() {
 			update((_: Array<LevelMatrix>) => new Array<LevelMatrix>())
+			forceUpdate.update((_: Array<boolean>) => new Array<boolean>())
 		},
 		/**
 		 * switch two tiles with each other
@@ -158,6 +176,21 @@ function createLevelStore() {
 					})
 				})
 			})
+			forceUpdate.update((arr: Array<boolean>) => {
+				return arr.map((value, index) => {
+					return value || index == id1 || index == id2
+				})
+			})
+		},
+		/**
+		 * check if the given level need to be updated
+		 *
+		 * @param index level index to check
+		 * @returns true if the level need to be updated
+		 * @returns false if the level don't need to be updated
+		 */
+		needUpdate(index: number) {
+			return get(forceUpdate)[index]
 		},
 	}
 }
